@@ -13,7 +13,12 @@
     <script src="animacao.js"></script>
     <script src="teclado.js"></script>
     <script src="colisor.js"></script>
+    <script src="fundo.js"></script>
     <script src="ator.js"></script>
+    <script src="carro.js"></script>
+    <script src="spritesheet.js"></script>
+    <script src="explosao.js"></script>
+    <script src="painel.js"></script>
 
 </head>
 
@@ -31,6 +36,9 @@
         let colisor;
         let musica;
         let imagens;
+        let fundo;
+        let ator;
+        let painel;
         
         let totalImagens = 0;
         let carregadas = 0;
@@ -56,7 +64,8 @@
                 carro1: "carro-1.png",
                 carro2: "carro-2.png",
                 carro3: "carro-3.png",
-                estrada: "estrada.png"
+                estrada: "estrada.png",
+                explosao: "explosao.png"
 
             };
 
@@ -90,9 +99,13 @@
             animacao = new Animacao(context);
             teclado = new Teclado(document);
             colisor = new Colisor();
-            ator = new Ator(context, teclado, imagens.ator);
+            painel = new Painel(context);
+            estrada = new Fundo(context, imagens.estrada);
+            ator = new Ator(context, teclado, imagens.ator, painel);
 
+            animacao.novoSprite(estrada);
             animacao.novoSprite(ator);
+            animacao.novoSprite(painel);
 
             colisor.novoSprite(ator);
 
@@ -107,7 +120,85 @@
             ator.posicionar();
             ator.velocidade = 200;
 
+            criacaoCarros();
+
             animacao.ligar();
+            musica.play();
+
+        }
+
+        function criacaoCarros() {
+
+            criador = {
+
+                ultimoCarro: new Date().getTime(),
+
+                processar: function() {
+
+                    let agora = new Date().getTime();
+                    let decorrido = agora - this.ultimoCarro;
+
+                    if (decorrido > 500) {
+
+                        novoCarro();
+                        this.ultimoCarro = agora;
+
+                    }
+
+                }
+
+            };
+
+            animacao.novoProcessamento(criador);
+
+        }
+
+        function novoCarro() {
+
+            let carros = [imagens.carro1, imagens.carro2, imagens.carro3];
+            
+            let i = numeroAleatorio(0, 2);
+            let carro = new Carro(context, carros[i], imagens.explosao);
+
+            carro.velocidade = numeroAleatorio(100, 500)
+            carro.x = 600;
+
+            let rua = numeroAleatorio(1, 6);
+            
+            if (rua == 1) {
+
+                carro.y = 40;
+                
+            } else if (rua == 2) {
+
+                carro.y = 96;
+
+            } else if (rua == 3) {
+
+                carro.y = 150;
+
+            } else if (rua == 4) {
+
+                carro.y = 210;
+
+            } else if (rua == 5) {
+
+                carro.y = 264;
+
+            } else if (rua == 6) {
+
+                carro.y = 318;
+
+            }
+
+            animacao.novoSprite(carro);
+            colisor.novoSprite(carro);
+
+        }
+
+        function numeroAleatorio(min, max) {
+
+            return min + Math.floor(Math.random() * (max - min + 1));;
 
         }
 
