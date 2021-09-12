@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+
+<html lang="pt-br">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Freeway</title>
+
+    <script src="animacao.js"></script>
+    <script src="teclado.js"></script>
+    <script src="colisor.js"></script>
+    <script src="ator.js"></script>
+
+</head>
+
+<body>
+    
+    <canvas id="canvas" width="500" height="400"></canvas>
+    
+    <script>
+
+        let canvas = document.getElementById("canvas");
+        let context = canvas.getContext("2d");
+
+        let animacao;
+        let teclado;
+        let colisor;
+        let musica;
+        let imagens;
+        
+        let totalImagens = 0;
+        let carregadas = 0;
+
+        carregarMusica();
+        carregarImagens();
+        
+        function carregarMusica() {
+
+            musica = new Audio();
+            musica.src = "snd/musica.mp3";
+            musica.load();
+            musica.volume = 0.2;
+            musica.loop = true;
+
+        }
+
+        function carregarImagens() {
+
+            imagens = {
+
+                ator: "ator.png",
+                carro1: "carro-1.png",
+                carro2: "carro-2.png",
+                carro3: "carro-3.png",
+                estrada: "estrada.png"
+
+            };
+
+            for (let i in imagens) {
+
+                let img = new Image();
+                img.src = "img/" + imagens[i];
+                img.onload = carregando;
+                totalImagens++;
+
+                imagens[i] = img;
+
+            }
+
+        }
+
+        function carregando() {
+
+            carregadas++;
+
+            if (carregadas == totalImagens) {
+
+                iniciarObjetos();
+
+            }
+
+        }
+
+        function iniciarObjetos() {
+
+            animacao = new Animacao(context);
+            teclado = new Teclado(document);
+            colisor = new Colisor();
+            ator = new Ator(context, teclado, imagens.ator);
+
+            animacao.novoSprite(ator);
+
+            colisor.novoSprite(ator);
+
+            animacao.novoProcessamento(colisor);
+
+            configuracoesIniciais();
+
+        }
+
+        function configuracoesIniciais() {
+
+            ator.posicionar();
+            ator.velocidade = 200;
+
+            animacao.ligar();
+
+        }
+
+    </script>
+
+</body>
+
+</html>
